@@ -1,0 +1,42 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./postgres-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  trino:
+    image: trinodb/trino:483
+    ports:
+      - "${TRINO_PORT}:8080"
+    volumes:
+      - ./trino/catalog:/etc/trino/catalog:ro
+      - ./trino/etc/access-control.properties:/etc/trino/access-control.properties:ro
+      - ./trino/access-control:/etc/trino/access-control:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  metabase:
+    image: metabase/metabase-enterprise:latest
+    environment:
+      MB_PREMIUM_EMBEDDING_TOKEN: ${MB_PREMIUM_EMBEDDING_TOKEN}
+      MB_LOAD_SAMPLE_CONTENT: "false"
+      MB_CONFIG_FILE_PATH: /metabase-config/config.yml
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      USER_PASSWORD: ${USER_PASSWORD}
+      MB_AUTOMATION_API_KEY: ${MB_AUTOMATION_API_KEY}
+    ports:
+      - "${METABASE_PORT}:3000"
+    volumes:
+      - ./metabase-config/config.yml:/metabase-config/config.yml:ro
+    depends_on:
+      - trino

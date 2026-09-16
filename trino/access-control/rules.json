@@ -1,0 +1,40 @@
+{
+  "catalogs": [
+    { "allow": "all" }
+  ],
+  "impersonation": [
+    { "original_user": "trino_super", "new_user": "leo|mikey" }
+  ],
+  "tables": [
+    {
+      "user": "leo",
+      "schema": "public",
+      "table": "people",
+      "privileges": ["SELECT"],
+      "filter": "state IN ('TX', 'CA', 'NY', 'GA')",
+      "columns": [
+        { "name": "birth_date", "mask": "CAST('1788-01-01' AS date)" }
+      ]
+    },
+    { "user": "leo", "privileges": [] },
+    {
+      "user": "mikey",
+      "schema": "public",
+      "table": "people",
+      "privileges": ["SELECT"],
+      "filter": "state IN ('MT', 'IA', 'MN', 'WI')",
+      "columns": [
+        {
+          "name": "email",
+          "mask": "CAST(concat(substr(email, 1, 1), 'xxx@', substr(email, strpos(email, '@') + 1, 1), 'xxx') AS varchar(255))"
+        }
+      ]
+    },
+    { "user": "mikey", "privileges": [] },
+    {
+      "user": "trino_super",
+      "privileges": ["SELECT", "INSERT", "DELETE", "UPDATE", "OWNERSHIP", "GRANT_SELECT"]
+    },
+    { "privileges": [] }
+  ]
+}

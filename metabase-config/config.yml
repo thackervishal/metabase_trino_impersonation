@@ -1,0 +1,26 @@
+version: 1
+config:
+  settings:
+    site-name: "Trino Impersonation Demo"
+    site-locale: en
+    allow-tracking: false
+  users:
+    - first_name: Admin
+      last_name: User
+      email: "{{ env ADMIN_EMAIL }}"
+      password: "{{ env USER_PASSWORD }}"
+      is_superuser: true
+  api-keys:
+    - name: Automation Key
+      creator: "{{ env ADMIN_EMAIL }}"
+      group: admin
+      key: "{{ env MB_AUTOMATION_API_KEY }}"
+  databases:
+    - name: trino_test
+      engine: starburst
+      details:
+        host: trino
+        port: 8080
+        catalog: postgresql
+        user: trino_super
+        ssl: false
