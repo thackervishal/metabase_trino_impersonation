@@ -8,7 +8,7 @@ A minimal, throwaway local stack: Postgres (sample data) → Trino (query engine
 2. `docker compose up -d`
 3. Wait about a minute for Metabase to finish booting, then: `bash seed.sh`
 
-All passwords are the same (`metabot1` by default, see `.env`) — this is a disposable local stack, not meant to hold anything sensitive.
+All passwords are the same (`metabot1` by default, see `.env`) - this is a disposable local stack, not meant to hold anything sensitive.
 
 ## URLs and logins
 
@@ -26,6 +26,7 @@ All passwords are the same (`metabot1` by default, see `.env`) — this is a dis
 | Donny | donny@example.com | metabot1 | Analytics Team (**not** impersonated) | none — runs as `trino_super` |
 
 Ports and passwords come from `.env` — the values above are the defaults in `.env.example`; if you changed them, use your own values instead.
+
 To log into the Trino admin UI, use username `trino_super` and no password. Also, when looking at the query history on the Trino dashboard, remember to add "Finished" queries to the default filter.
 
 ## What gets created
@@ -34,8 +35,8 @@ To log into the Trino admin UI, use username `trino_super` and no password. Also
   - Leo → sees `people` rows for `TX, CA, NY, GA` only, real email, `birth_date` redacted.
   - Mikey → sees `people` rows for `MT, IA, MN, WI` only, masked email, real `birth_date`.
   - Both are denied every other table (e.g. `accounts`) outright.
-- **Analytics Team** group — data permission set to: View data = Unrestricted on `trino_test`, **no** user attribute at all. Because their group's access is more permissive than any impersonation policy, Metabase never attempts impersonation for them — their queries just run as the base `trino_super` connection, seeing everything. Any restrictions needed for un-impersonated users can be added in Metabase's own permissions system instead (e.g. whether they have SQL access at all) — impersonation itself won't apply.
-- **All Users** (the implicit group everyone belongs to) is explicitly set to **Blocked** on `trino_test` — required so it doesn't override the Sales Team's impersonation restriction (Metabase always grants the most permissive access across a person's groups).
+- **Analytics Team** group — data permission set to: View data = Unrestricted on `trino_test`, **no** user attribute at all. Because their group's access is more permissive than any impersonation policy, Metabase never attempts impersonation for them — their queries just run as the base `trino_super` connection, seeing everything. Any restrictions needed for un-impersonated users can be added in Metabase's own permissions system instead (e.g. whether they have SQL access at all).
+- **All Users** (the implicit group everyone belongs to) is explicitly set to **Blocked** on `trino_test` required so it doesn't override permissions set on the individual groups (Metabase always grants the most permissive access across a person's groups).
 
 ## Demo/Test
 
@@ -55,7 +56,7 @@ To log into the Trino admin UI, use username `trino_super` and no password. Also
 
 ## Editing the access-control rules
 
-`trino/access-control/rules.json` is Trino's file-based access-control policy — it's what actually enforces the row filters, column masks, and table grants once Metabase asks Trino to impersonate someone. Trino re-reads this file every ~5 seconds (`security.refresh-period` in `trino/etc/access-control.properties`), so edits take effect without restarting anything.
+`trino/access-control/rules.json` is Trino's file-based access-control policy -- this is what actually enforces the row filters, column masks, and table grants once Metabase asks Trino to impersonate someone. Trino re-reads this file every ~5 seconds (`security.refresh-period` in `trino/etc/access-control.properties`), so edits take effect without restarting anything in the stack.
 
 ## Re-running
 
