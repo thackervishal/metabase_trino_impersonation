@@ -39,6 +39,8 @@ To log into the Trino admin UI, use username `trino_super` and no password. Also
 
 ## Demo/Test
 
+[Watch an End to End Demo](https://youtu.be/1-9eCV3QsCc)
+
 - Log in as admin to Metabase, browse around, see the groups, the users, the user attributes, the permissions (data perms), etc.
 - Then log in to Metabase as Leo (in an incognito/other browser):
   - Open the `accounts` table in Metabase.
